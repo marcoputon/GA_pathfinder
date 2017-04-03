@@ -10,12 +10,17 @@ def dist(a, b):
 
 def main():
 	G = nx.grid_graph(dim = [20, 20, 20])
-	ga = GA([G], 64)
-	ga.generate_subjects()
-	ga.run_subjects()
-	ga.print_subjects()
-	
+	ga = GA([G], 64, 26)
+	s = ga.run(0.9, True)
 
+	for i in range(5):
+		ga.cross()
+		s = ga.run(0.9, False)
+
+	print("\n", s.a, s.b)
+	p = s.run_forest_run((0, 0, 0), (19, 19, 19), 8000, G)
+	for i in p:
+		print(i)
 
 if __name__ == "__main__":
 	main()
