@@ -10,9 +10,9 @@ def dist(a, b):
 
 def main():
 	G = nx.grid_graph(dim = [10, 10, 10])
-	ga = GA([G], 64)
+	ga = GA([G], 64, 21)
 	ga.generate_subjects()
-	ga.run(1, 10)
+	ga.run(1, 500)
 
 
 

@@ -200,8 +200,8 @@ class Subject:
 		n = self.G.neighbors(a)
 		pos = self.test_pos(a, b)
 
-		if len(n) == 6:
-			wt = self.sub_decide(a, b, pos, self.gen[:21])
+		wt = self.sub_decide(a, b, pos, self.gen)
+		'''
 
 		elif len(n) == 5:
 			wt = self.sub_decide(a, b, pos, self.gen[21:42])
@@ -211,7 +211,6 @@ class Subject:
 
 		elif len(n) == 3:
 			wt = self.sub_decide(a, b, pos, self.gen[63:84])
-
 		elif len(n) == 2:
 			wt = self.sub_decide(a, b, pos, self.gen[84:])
 
@@ -219,5 +218,6 @@ class Subject:
 			print("Só tem um visinho. Aumentar o genótipo.")
 			quit()
 
+		'''
 		where = self.where_to(a, n, wt)
 		return where

@@ -3,11 +3,14 @@ from random import choice, uniform
 
 
 class GA:
-	def __init__(self, Graphs, generation_size):
+	def __init__(self, Graphs, generation_size,  genotype_size):
 		self.Graphs = Graphs
 		self.subjects = []
 		self.gen_size = generation_size
+		self.genotype_size = genotype_size
 		self.best_one = None
+		self.Xfitness = 0
+		self.gen_n = 0
 
 
 	def select_bests(self, n):
@@ -58,7 +61,7 @@ class GA:
 	def generate_subjects(self):
 		self.subjects = []
 
-		genotype_iter = range(105)
+		genotype_iter = range(self.genotype_size)
 		generation_iter = range(self.gen_size)
 
 		for i in generation_iter:
@@ -126,6 +129,8 @@ class GA:
 
 
 	def run_subjects(self):
+		self.Xfitness = 0
+		summ = 0
 		for i in self.subjects:
 			sg = choice(self.Graphs)
 			a = choice(sg.nodes())
@@ -134,23 +139,31 @@ class GA:
 			while b == a:
 				b = choice(sg.nodes())
 
-			i.run_forest_run(choice(sg.nodes()), choice(sg.nodes()), sg.size(), sg)
+			i.run_forest_run(a, b, sg.size(), sg)
 			self.fitness(i)
 			if i.fitness > self.best_one.fitness:
 				self.best_one = i
-			print("%s | %f" %(i.gen, i.fitness))
-		print()
+			summ += i.fitness
+			#print(i.fitness)
+		self.Xfitness = summ / self.gen_size
+
 
 	def run(self, stop, more):
 		self.generate_subjects()
 		self.best_one = self.subjects[0]
+		n = 1
+
 		while self.best_one.fitness < stop:
 			self.run_subjects()
+			print("Generation: %d | Avarage fitness: %f" %(n, self.Xfitness))
 			self.cross()
-
+			n += 1
+		print("Someone did it")
 		for i in range(more):
 			self.run_subjects()
+			print("Generation: %d | Avarage fitness: %f" %(n, self.Xfitness))
 			self.cross()
+			n += 1
 
 		print(self.best_one.fitness)
 		print(self.best_one.a, self.best_one.b)
