@@ -12,10 +12,7 @@ def main():
 	G = nx.grid_graph(dim = [10, 10, 10])
 	ga = GA([G], 64)
 	ga.generate_subjects()
-	ga.run_subjects()
-	ga.print_subjects()
-	for i in ga.subjects[0].path:
-		print(i)
+	ga.run(1, 10)
 
 
 
