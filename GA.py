@@ -1,15 +1,13 @@
 from Subject import *
-from random import choice, uniform, randint
-from copy import *
+from random import choice
+
 
 class GA:
-	def __init__(self, Graphs, generation_size, genotype_size):
+	def __init__(self, Graphs, generation_size):
 		self.Graphs = Graphs
 		self.subjects = []
 		self.gen_size = generation_size
-		self.new_subjects = []
-		self.best_fitness = 0
-		self.genotype_size = genotype_size
+		self.best_one = None
 
 
 	def select_bests(self, n):
@@ -26,7 +24,7 @@ class GA:
 	def print_subjects(self):
 		for i in self.subjects:
 			print("%s | %f | %s" %(i.gen, i.fitness, i.didIt))
-
+			print(i.path)
 
 	def manhattan(self, a, b):
 		(x1, y1, z1) = a
@@ -51,106 +49,32 @@ class GA:
 		#	Se não chegou no destino, adiciona a penalidade
 		#	Soma a distancia do último nodo do caminho até o destino com a menor
 		#	distância da origem até o destino (origem -> destino -> onde parou).
-		path_dist += best_dist + self.manhattan(subject.path[-1], subject.b)
+		path_dist += 2 * self.manhattan(subject.path[-1], subject.b)
 
 		subject.fitness = (best_dist / path_dist)
 
-		if subject.fitness > self.best_fitness:
-			self.best_fitness = subject.fitness
-
-		#print("%s | %f"%(subject.gen, subject.fitness))
-
-
-	def cross(self):
-		self.new_subjects = []
-		ordered_subj = sorted(self.subjects, key=lambda x: x.fitness, reverse=True)
-
-		sum_fit = 0
-		for i in ordered_subj:
-			sum_fit += i.fitness
-
-		for i in range(int(self.gen_size / 2)):
-			a = uniform(0, sum_fit)
-
-			inter = 0
-			for i in ordered_subj:
-				if a >= inter and a < inter + i.fitness:
-					a = i
-					break
-				inter += i.fitness
-
-			flag = True
-			while flag:
-				inter = 0
-				b = uniform(0, sum_fit)
-				for i in ordered_subj:
-					if b >= inter and b < inter + i.fitness:
-						if i.gen != a.gen:
-							b = i
-							flag = False
-							break
-					inter += i.fitness
-
-			#	Aqui já tem sorteado dois indivíduos, em a e b
-			#	Agora tem que sortear os atributos que vão ser misturados
-			#	Somar as fitness e sortear de acordo com o quao bom são os pais
-			#	wtc é a
-			soma = a.fitness + b.fitness
-			prob_a = a.fitness / soma
-			new_a = ""
-			new_b = ""
-
-			for i in range(len(a.gen)):
-				s = uniform(0, soma)
-				if s < prob_a:
-					new_a += a.gen[i]
-					new_b += b.gen[i]
-				else:
-					new_a += b.gen[i]
-					new_b += a.gen[i]
-			self.new_subjects.append(Subject(new_a))
-			self.new_subjects.append(Subject(new_b))
-
-			print(new_a)
-			print(new_b)
-
-		self.subjects = self.new_subjects
 
 
 	def generate_subjects(self):
-		genotype_iter = range(self.genotype_size)
+		self.subjects = []
+
+		genotype_iter = range(105)
 		generation_iter = range(self.gen_size)
 
 		for i in generation_iter:
 			new_gen = ""
 			for i in genotype_iter:
-				new_gen += choice(['N', 'S', 'L', 'W', 'U', 'D'])
+				new_gen += choice(['N', 'S', 'L', 'E', 'U', 'D'])
 			self.subjects.append(Subject(new_gen))
-
 
 	def run_subjects(self):
 		for i in self.subjects:
 			sg = choice(self.Graphs)
-			a = choice(sg.nodes())
-			b = choice(sg.nodes())
-			while b == a:
-				b = choice(sg.nodes())
-
-			i.run_forest_run(a, b, sg.size(), sg)
+			i.run_forest_run(choice(sg.nodes()), choice(sg.nodes()), sg.size(), sg)
 			self.fitness(i)
 
-
-	def run(self, goal, g):
-		self.best_fitness = 0
-		if g:
-			self.generate_subjects()
-
-		while True:
-			self.run_subjects()
-			if self.best_fitness >= goal:
-				for i in self.subjects:
-					if i.fitness >= self.best_fitness:
-						print(i.gen, i.fitness)
-						return i
-			self.cross()
-			print(self.best_fitness)
+	def run(self, stop):
+		self.generate_subjects()
+		self.best_one = self.subjects[0]
+			while self.best_one.fitness < stop:
+				pass

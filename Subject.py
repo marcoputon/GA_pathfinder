@@ -1,6 +1,3 @@
-from time import time
-
-
 class Subject:
 	def __init__(self, genotype):
 		self.gen = genotype
@@ -17,22 +14,19 @@ class Subject:
 		self.G = graph
 		self.a = a
 		self.b = b
-		self.path = []
+		self.path.append(a)
 		next_a = a
 
 		step = 0
-		t = time()
 		while step < max_steps or next_a == b:
 			next_a = self.next_node(next_a, b)
+			if next_a is None:
+				break
 			self.path.append(next_a)
 			step += 1
-			if time() - t > 0.005:
-				break
 
 		if next_a == b:
 			self.didIt = True
-
-		return self.path
 
 
 	def test_pos(self, a, b):
@@ -47,102 +41,9 @@ class Subject:
 				r[i] = -1
 		return tuple(r)
 
-	def alter_decide(self, a, b, pos, sub_gen):
-		#	001
-		if pos[0] == 0 and pos[1] == 0 and pos[2] < 0:
-			return sub_gen[0]
-
-		if pos[0] == 0 and pos[1] == 0 and pos[2] > 0:
-			return sub_gen[1]
-
-
-		#	010
-		if pos[0] == 0 and pos[1] < 0 and pos[2] == 0:
-			return sub_gen[2]
-
-		if pos[0] == 0 and pos[1] > 0 and pos[2] == 0:
-			return sub_gen[3]
-
-		#	011
-		if pos[0] == 0 and pos[1] < 0 and pos[2] < 0:
-			return sub_gen[4]
-
-		if pos[0] == 0 and pos[1] < 0 and pos[2] > 0:
-			return sub_gen[5]
-
-		if pos[0] == 0 and pos[1] > 0 and pos[2] < 0:
-			return sub_gen[6]
-
-		if pos[0] == 0 and pos[1] > 0 and pos[2] > 0:
-			return sub_gen[7]
-
-
-		#	100
-		if pos[0] < 0 and pos[1] == 0 and pos[2] == 0:
-			return sub_gen[8]
-
-		if pos[0] > 0 and pos[1] == 0 and pos[2] == 0:
-			return sub_gen[9]
-
-		#	101
-		if pos[0] < 0 and pos[1] == 0 and pos[2] < 0:
-			return sub_gen[10]
-
-		if pos[0] < 0 and pos[1] == 0 and pos[2] > 0:
-			return sub_gen[11]
-
-		if pos[0] > 0 and pos[1] == 0 and pos[2] < 0:
-			return sub_gen[12]
-
-		if pos[0] > 0 and pos[1] == 0 and pos[2] > 0:
-			return sub_gen[13]
-
-
-
-		#	110
-		if pos[0] < 0 and pos[1] < 0 and pos[2] == 0:
-			return sub_gen[14]
-
-		if pos[0] < 0 and pos[1] > 0 and pos[2] == 0:
-			return sub_gen[15]
-
-		if pos[0] > 0 and pos[1] < 0 and pos[2] == 0:
-			return sub_gen[16]
-
-		if pos[0] > 0 and pos[1] > 0 and pos[2] == 0:
-			return sub_gen[17]
-
-
-		#	111
-		if pos[0] < 0 and pos[1] < 0 and pos[2] < 0:
-			return sub_gen[18]
-
-		if pos[0] < 0 and pos[1] < 0 and pos[2] > 0:
-			return sub_gen[19]
-
-		if pos[0] < 0 and pos[1] > 0 and pos[2] < 0:
-			return sub_gen[20]
-
-		if pos[0] < 0 and pos[1] > 0 and pos[2] > 0:
-			return sub_gen[21]
-
-		if pos[0] > 0 and pos[1] < 0 and pos[2] < 0:
-			return sub_gen[22]
-
-		if pos[0] > 0 and pos[1] < 0 and pos[2] > 0:
-			return sub_gen[23]
-
-		if pos[0] > 0 and pos[1] > 0 and pos[2] < 0:
-			return sub_gen[24]
-
-		if pos[0] > 0 and pos[1] > 0 and pos[2] > 0:
-			return sub_gen[25]
-
-
-
 
 	def sub_decide(self, a, b, pos, sub_gen):
-		if pos[0] == 0 and pos[1] == 0 and pos[2] != 0:		#	XY=
+		if pos[0] == 0 and pos[1] == 0:		#	XY=
 			#	Case 0
 			if b[2] - a[2] > 0:	#	Pela direita
 				return sub_gen[0]
@@ -151,7 +52,7 @@ class Subject:
 			else:	#	Pela esquerda
 				return sub_gen[1]
 
-		elif pos[0] == 0 and pos[2] == 0 and pos[1] != 0:	#	XZ=
+		elif pos[0] == 0 and pos[2] == 0:	#	XZ=
 			#	Case 2
 			if b[1] - a[1] > 0:	#	Pela direita
 				return sub_gen[2]
@@ -161,7 +62,7 @@ class Subject:
 				return sub_gen[3]
 
 		#	YZ=
-		elif pos[1] == 0 and pos[2] == 0 and pos[0] != 0:
+		elif pos[1] == 0 and pos[2] == 0:
 			#	Case 4
 			if b[0] - a[0] > 0:	#	Pela direita
 				return sub_gen[4]
@@ -171,7 +72,7 @@ class Subject:
 				return sub_gen[5]
 
 		#	X=
-		elif pos[0] == 0 and pos[1] != 0 and pos[2] != 0:
+		elif pos[0] == 0:
 			#	Esta mais perto por Y
 			if abs(b[1] - a[1]) < abs(b[2] - a[2]):
 				#	Pela direita
@@ -197,7 +98,7 @@ class Subject:
 					return sub_gen[9]
 
 		#	Y=
-		elif pos[1] == 0 and pos[0] != 0 and pos[2] != 0:
+		elif pos[1] == 0:
 			#	Está mais perto por X
 			if abs(b[0] - a[0]) < abs(b[2] - a[2]):
 				#	Pela direita
@@ -223,7 +124,7 @@ class Subject:
 					return sub_gen[13]
 
 		#	Z=
-		elif pos[2] == 0 and pos[0] != 0 and pos[1] != 0:
+		elif pos[2] == 0:
 			#	Esta mais perto por Y
 			if abs(b[1] - a[1]) < abs(b[0] - a[0]):
 				#	Pela direita
@@ -299,8 +200,6 @@ class Subject:
 		n = self.G.neighbors(a)
 		pos = self.test_pos(a, b)
 
-		wt = self.alter_decide(a, b, pos, self.gen)
-		'''
 		if len(n) == 6:
 			wt = self.sub_decide(a, b, pos, self.gen[:21])
 
@@ -315,13 +214,10 @@ class Subject:
 
 		elif len(n) == 2:
 			wt = self.sub_decide(a, b, pos, self.gen[84:])
+
 		else:
 			print("Só tem um visinho. Aumentar o genótipo.")
 			quit()
-			'''
 
 		where = self.where_to(a, n, wt)
-		if where:
-			return where
-		else:
-			return a
+		return where
