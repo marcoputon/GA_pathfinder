@@ -1,34 +1,51 @@
 class Subject:
 	def __init__(self, genotype):
-		self.gen = genotype
-		self.path = []
-		self.a = None
-		self.b = None
-		self.fitness = 0
-		self.G = None
-		self.didIt = False
+		self.gen = genotype			#	Gen do indivíduo
+		self.path = []				#	O caminho que o individuo encontrou
+		self.a = None				#	Vértice inicial
+		self.b = None				#	Vértice final
+		self.fitness = 0			#	Fitness
+		self.G = None				#	O grafo onde o indivíduo é testado
+		self.didIt = False			#	Se chegou até b
 
 
 	#	Função que roda o indivíduo
 	def run_forest_run(self, a, b, max_steps, graph):
+
+		#	Seta valores iniciais
 		self.G = graph
 		self.a = a
 		self.b = b
 		self.path.append(a)
 		next_a = a
 
+		#	Variável para controlar o numero máximo de passos
 		step = 0
+
+		#	Executa enquando não chegar no vértice final ou não atingir o
+		#	número máximo de passos.
 		while step < max_steps or next_a == b:
+
+			#	De acordo com o gen, diz qual o próximo vértice do caminho.
 			next_a = self.next_node(next_a, b)
+
+			#	Se ficou parado, termina.
 			if next_a is None:
 				break
+
+			#	Adiciona o vértice no caminho.
 			self.path.append(next_a)
+
 			step += 1
 
+		#	Se terminou e chegou no destino, seta que conseguiu.
 		if next_a == b:
 			self.didIt = True
 
-
+	#	Coloca valores nas coordenadas para saber se está a cima, a baixo, ou igual
+	#	igual:		0
+	#	a cima:		1
+	#	a baixo:   -1
 	def test_pos(self, a, b):
 		r = [0, 0, 0]
 
@@ -39,6 +56,7 @@ class Subject:
 				r[i] = 1
 			else:
 				r[i] = -1
+
 		return tuple(r)
 
 
@@ -194,30 +212,17 @@ class Subject:
 		return None
 
 
-	#			len(gen) = 105
+	#	Decide qual é o próximo vértice de acordo com o gen e com o estado atual
 	def next_node(self, a, b):
-		#print(a)
+
+		#	Vizinhos de do vértice atual
 		n = self.G.neighbors(a)
+
+		#
 		pos = self.test_pos(a, b)
 
 		wt = self.sub_decide(a, b, pos, self.gen)
-		'''
 
-		elif len(n) == 5:
-			wt = self.sub_decide(a, b, pos, self.gen[21:42])
-
-		elif len(n) == 4:
-			wt = self.sub_decide(a, b, pos, self.gen[42:63])
-
-		elif len(n) == 3:
-			wt = self.sub_decide(a, b, pos, self.gen[63:84])
-		elif len(n) == 2:
-			wt = self.sub_decide(a, b, pos, self.gen[84:])
-
-		else:
-			print("Só tem um visinho. Aumentar o genótipo.")
-			quit()
-
-		'''
 		where = self.where_to(a, n, wt)
+
 		return where
