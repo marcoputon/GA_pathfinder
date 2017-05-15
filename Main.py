@@ -11,10 +11,24 @@ def dist(a, b):
 
 def main():
 	G = nx.grid_graph(dim = [10, 10, 5])
-	ga = GA([G], 64, 21)
+	ga = GA([G], 500, 27)
 	ga.generate_subjects()
-	ga.run(1, 500)
+	ga.run(0.97, 200, 200)
 
+	'''
+	i = Subject(ga.best_one.gen)
+	i.run_forest_run((0, 0, 0), (5, 7, 3), 449, G)
+	print("\n", i.a, i.b, "\n", i.path)
+
+	i.run_forest_run((0, 7, 0), (5, 7, 3), 449, G)
+	print("\n", i.a, i.b, "\n", i.path)
+
+	i.run_forest_run((0, 9, 0), (5, 7, 3), 449, G)
+	print("\n", i.a, i.b, "\n", i.path)
+
+	i.run_forest_run((9, 9, 3), (2, 1, 2), 449, G)
+	print("\n", i.a, i.b, "\n", i.path)
+	'''
 
 if __name__ == "__main__":
 	main()

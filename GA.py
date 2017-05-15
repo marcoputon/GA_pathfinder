@@ -1,5 +1,6 @@
 from Subject import *
 from random import choice, uniform
+from math import sqrt
 
 
 class GA:
@@ -35,6 +36,21 @@ class GA:
 
 
 	def fitness(self, subject):
+		'''
+		#	Distância percorrida + distância de manhattan
+		path_dist = 0
+		path_size = len(subject.path)
+
+		c1 = 0
+		c2 = c1 + 1
+		while c2 < path_size:
+			path_dist += self.manhattan(subject.path[c1], subject.path[c2])
+			c1 += 1
+			c2 = c1 + 1
+
+		subject.fitness = (1 - ((path_dist + self.max_dist(subject.path[-1], subject.b)) / (self.max_dist((0, 0, 0), (9,  9,  4)))))
+		'''
+
 
 		#	Distância percorrida + distância de manhattan
 		path_dist = 0
@@ -52,7 +68,7 @@ class GA:
 		#	Se não chegou no destino, adiciona a penalidade
 		#	Soma a distancia do último nodo do caminho até o destino com a menor
 		#	distância da origem até o destino (origem -> destino -> onde parou).
-		path_dist += 2 * self.manhattan(subject.path[-1], subject.b)
+		path_dist += self.manhattan(subject.path[-1], subject.b) ** 2
 
 		subject.fitness = (best_dist / path_dist)
 
@@ -60,8 +76,12 @@ class GA:
 
 
 
+
+
+
+
 	def max_dist(self, a, b):
-		return (abs(b[0] - a[0]) + 1) * (abs(b[1] - a[1]) + 1) - 1
+		return (abs(b[0] - a[0]) + 1) * (abs(b[1] - a[1]) + 1) * (abs(b[2] - a[2]) + 1) - 1
 
 
 
@@ -176,7 +196,8 @@ class GA:
 				b = choice(sg.nodes())
 
 			#	Roda o indivíduo
-			i.run_forest_run(a, b, sg.size(), sg)
+			i.run_forest_run(a, b, len(sg.nodes()) - 1, sg)
+			#i.run_forest_run((0, 0, 0), (9, 9, 4), len(sg.nodes()) - 1, sg)
 
 			#	Calcula a fitness
 			self.fitness(i)
@@ -188,12 +209,14 @@ class GA:
 			#	Soma as fitness
 			summ += i.fitness
 
+			#print("gen: %s | fitness: %f" %(i.gen, i.fitness))
+
 		#	Calcula a média das fitness
 		self.Xfitness = summ / self.gen_size
 
 
 	#	Executar o algoritmo genético
-	def run(self, stop, more):
+	def run(self, stop, more,  only):
 
 		#	Gera a primeira geração de indivíduos
 		self.generate_subjects()
@@ -209,14 +232,14 @@ class GA:
 
 			#	Executa os indivíduos
 			self.run_subjects()
-			print("Generation: %d | Avarage fitness: %f" %(n, self.Xfitness))
+			print("Generation: %d | Avarage fitness: %f | Best fitness: %f" %(n, self.Xfitness, self.best_one.fitness))
 
 			#	Faz o cruzamento
 			self.cross()
-
+			if only and n >= only:
+				break
 			n += 1
 
-		print("Someone did it")
 
 		#	Executa as iterações a mais
 		for i in range(more):
@@ -226,6 +249,8 @@ class GA:
 			n += 1
 
 		#	Mostra os resultados
-		print(self.best_one.fitness)
+		print("best one's fitness:", self.best_one.fitness)
+		print("best one's gen:", self.best_one.gen)
+		print("Path:")
 		print(self.best_one.a, self.best_one.b)
 		print(self.best_one.path)
